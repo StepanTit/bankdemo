@@ -1,0 +1,166 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-bankdemo-api",
+    "name": "bankdemo API",
+    "description": "REST API for the bankdemo Spring Boot application. Set `baseUrl` if the server is not on localhost:8080.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "accountId",
+      "value": "1"
+    },
+    {
+      "key": "sourceAccountId",
+      "value": "1"
+    },
+    {
+      "key": "targetAccountId",
+      "value": "2"
+    }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"alice\"\n}"
+            },
+            "url": "{{baseUrl}}/api/operations/user-create",
+            "description": "Creates a user and one starter account. Returns `UserResponse` (201)."
+          },
+          "response": []
+        },
+        {
+          "name": "Show all users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/operations/show-all-users",
+            "description": "Returns all users with accounts (200)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Create account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}}\n}"
+            },
+            "url": "{{baseUrl}}/api/operations/account-create",
+            "description": "Opens another account for the given user (201)."
+          },
+          "response": []
+        },
+        {
+          "name": "Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": {{accountId}},\n  \"amount\": 100.50\n}"
+            },
+            "url": "{{baseUrl}}/api/operations/account-deposit",
+            "description": "Deposits funds. Returns `AccountResponse` with updated balance (200)."
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": {{accountId}},\n  \"amount\": 25.00\n}"
+            },
+            "url": "{{baseUrl}}/api/operations/account-withdraw",
+            "description": "Withdraws funds (204)."
+          },
+          "response": []
+        },
+        {
+          "name": "Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceAccountId\": {{sourceAccountId}},\n  \"targetAccountId\": {{targetAccountId}},\n  \"amount\": 50.00\n}"
+            },
+            "url": "{{baseUrl}}/api/operations/account-transfer",
+            "description": "Transfers between accounts (204)."
+          },
+          "response": []
+        },
+        {
+          "name": "Close account",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": {{accountId}}\n}"
+            },
+            "url": "{{baseUrl}}/api/operations/account-close",
+            "description": "Closes an account; balance is moved to another account of the same user (204)."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
