@@ -45,17 +45,17 @@
               "mode": "raw",
               "raw": "{\n  \"login\": \"alice\"\n}"
             },
-            "url": "{{baseUrl}}/api/operations/user-create",
+            "url": "{{baseUrl}}/api/users",
             "description": "Creates a user and one starter account. Returns `UserResponse` (201)."
           },
           "response": []
         },
         {
-          "name": "Show all users",
+          "name": "Get users",
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/api/operations/show-all-users",
+            "url": "{{baseUrl}}/api/users",
             "description": "Returns all users with accounts (200)."
           },
           "response": []
@@ -79,8 +79,18 @@
               "mode": "raw",
               "raw": "{\n  \"userId\": {{userId}}\n}"
             },
-            "url": "{{baseUrl}}/api/operations/account-create",
+            "url": "{{baseUrl}}/api/accounts",
             "description": "Opens another account for the given user (201)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get accounts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/accounts",
+            "description": "Returns all accounts (200)."
           },
           "response": []
         },
@@ -96,9 +106,9 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"accountId\": {{accountId}},\n  \"amount\": 100.50\n}"
+              "raw": "{\n  \"amount\": 100.50\n}"
             },
-            "url": "{{baseUrl}}/api/operations/account-deposit",
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}/deposit",
             "description": "Deposits funds. Returns `AccountResponse` with updated balance (200)."
           },
           "response": []
@@ -115,10 +125,10 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"accountId\": {{accountId}},\n  \"amount\": 25.00\n}"
+              "raw": "{\n  \"amount\": 25.00\n}"
             },
-            "url": "{{baseUrl}}/api/operations/account-withdraw",
-            "description": "Withdraws funds (204)."
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}/withdraw",
+            "description": "Withdraws funds. Returns `AccountResponse` with updated balance (200)."
           },
           "response": []
         },
@@ -136,26 +146,17 @@
               "mode": "raw",
               "raw": "{\n  \"sourceAccountId\": {{sourceAccountId}},\n  \"targetAccountId\": {{targetAccountId}},\n  \"amount\": 50.00\n}"
             },
-            "url": "{{baseUrl}}/api/operations/account-transfer",
-            "description": "Transfers between accounts (204)."
+            "url": "{{baseUrl}}/api/accounts/transfer",
+            "description": "Transfers between accounts. Returns `TransferResponse` with updated `sourceAccount` and `targetAccount` (200)."
           },
           "response": []
         },
         {
           "name": "Close account",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"accountId\": {{accountId}}\n}"
-            },
-            "url": "{{baseUrl}}/api/operations/account-close",
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}",
             "description": "Closes an account; balance is moved to another account of the same user (204)."
           },
           "response": []

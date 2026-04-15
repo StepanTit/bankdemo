@@ -10,9 +10,9 @@ public interface AccountService {
 
     Account deposit(long accountId, BigDecimal amount);
 
-    void withdraw(long accountId, BigDecimal amount);
+    Account withdraw(long accountId, BigDecimal amount);
 
-    void transfer(long sourceAccountId, long targetAccountId, BigDecimal amount);
+    TransferResult transfer(long sourceAccountId, long targetAccountId, BigDecimal amount);
 
     void closeAccount(long accountId);
 }

@@ -57,7 +57,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public void withdraw(long accountId, BigDecimal amount) {
+    public Account withdraw(long accountId, BigDecimal amount) {
         validatePositiveAmount(amount);
         if (accountRepository.subtractFromBalanceIfSufficient(accountId, amount) == 0) {
             BigDecimal current = accountRepository.findById(accountId)
@@ -65,11 +65,13 @@ public class AccountServiceImpl implements AccountService {
                     .orElseThrow(() -> new AccountNotFoundException(accountId));
             throw new InsufficientFundsException(accountId, current, amount);
         }
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
     }
 
     @Override
     @Transactional
-    public void transfer(long sourceAccountId, long targetAccountId, BigDecimal amount) {
+    public TransferResult transfer(long sourceAccountId, long targetAccountId, BigDecimal amount) {
         validatePositiveAmount(amount);
         if (sourceAccountId == targetAccountId) {
             throw new IllegalArgumentException("Source and target account IDs must be different");
@@ -87,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
         if (sameUser) {
             withdrawFromLockedAccount(source, amount);
             depositToLockedAccount(target, amount);
-            return;
+            return new TransferResult(source, target);
         }
 
         BigDecimal commission = amount
@@ -102,6 +104,7 @@ public class AccountServiceImpl implements AccountService {
 
         source.setMoneyAmount(current.subtract(totalToWithdraw));
         target.setMoneyAmount(target.getMoneyAmount().add(amount));
+        return new TransferResult(source, target);
     }
 
     @Override

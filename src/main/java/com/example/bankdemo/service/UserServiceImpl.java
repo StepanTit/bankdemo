@@ -6,20 +6,16 @@ import com.example.bankdemo.entity.User;
 import com.example.bankdemo.exception.UserAlreadyExistsException;
 import com.example.bankdemo.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     @Transactional
@@ -34,7 +30,6 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.save(user);
         return user;
-
     }
 
     private boolean existsByLogin(String login) {

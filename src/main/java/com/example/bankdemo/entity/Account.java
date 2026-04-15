@@ -9,16 +9,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity
 @Table(name = "accounts")
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -27,9 +32,6 @@ public class Account {
 
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal moneyAmount;
-
-    protected Account() {
-    }
 
     public Account(User user, BigDecimal moneyAmount) {
         this.user = Objects.requireNonNull(user, "user must not be null");
