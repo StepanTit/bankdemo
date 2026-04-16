@@ -13,6 +13,7 @@ import com.example.bankdemo.service.AccountService;
 import com.example.bankdemo.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
@@ -34,12 +36,15 @@ public class BankOperationsRestController {
     private final AccountService accountService;
 
     @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse createUser(@Valid @RequestBody UserCreateRequest request) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest request) {
         User user = userService.createUser(request.login(), null);
         accountService.createAccount(user.getId());
         User refreshed = userService.findById(user.getId());
-        return UserResponse.from(refreshed);
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(refreshed.getId())
+                        .toUri())
+                .body(UserResponse.from(refreshed));
     }
 
     @GetMapping("/users")
@@ -47,11 +52,19 @@ public class BankOperationsRestController {
         return userService.findAll().stream().map(UserResponse::from).toList();
     }
 
+    @GetMapping("/users/{userId}")
+    public UserResponse getUser(@PathVariable long userId) {
+        return UserResponse.from(userService.findById(userId));
+    }
+
     @PostMapping("/accounts")
-    @ResponseStatus(HttpStatus.CREATED)
-    public AccountResponse createAccount(@Valid @RequestBody AccountCreateRequest request) {
+    public ResponseEntity<AccountResponse> createAccount(@Valid @RequestBody AccountCreateRequest request) {
         Account account = accountService.createAccount(request.userId());
-        return AccountResponse.from(account);
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(account.getId())
+                        .toUri())
+                .body(AccountResponse.from(account));
     }
 
     @GetMapping("/accounts")
@@ -60,6 +73,11 @@ public class BankOperationsRestController {
                 .flatMap(user -> user.getAccountList().stream())
                 .map(AccountResponse::from)
                 .toList();
+    }
+
+    @GetMapping("/accounts/{accountId}")
+    public AccountResponse getAccount(@PathVariable long accountId) {
+        return AccountResponse.from(accountService.findById(accountId));
     }
 
     @DeleteMapping("/accounts/{accountId}")

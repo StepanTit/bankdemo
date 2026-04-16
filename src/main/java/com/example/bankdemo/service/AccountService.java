@@ -10,6 +10,8 @@ public interface AccountService {
 
     Account createAccount(long userId);
 
+    Account findById(long accountId);
+
     Account deposit(long accountId, @NotNull @Positive BigDecimal amount);
 
     Account withdraw(long accountId, @NotNull @Positive BigDecimal amount);

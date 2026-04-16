@@ -42,7 +42,7 @@
               "raw": "{\n  \"login\": \"alice\"\n}"
             },
             "url": "{{baseUrl}}/api/users",
-            "description": "Creates a user and one starter account. Returns `UserResponse` (201)."
+            "description": "Creates a user and one starter account. Returns `UserResponse` (201) and `Location: {{baseUrl}}/api/users/{id}`."
           },
           "response": []
         },
@@ -53,6 +53,16 @@
             "header": [],
             "url": "{{baseUrl}}/api/users",
             "description": "Returns all users with accounts (200)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get user by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/users/{{userId}}",
+            "description": "Returns a single user by id (200)."
           },
           "response": []
         }
@@ -76,7 +86,7 @@
               "raw": "{\n  \"userId\": {{userId}}\n}"
             },
             "url": "{{baseUrl}}/api/accounts",
-            "description": "Opens another account for the given user (201)."
+            "description": "Opens another account for the given user. Returns `AccountResponse` (201) and `Location: {{baseUrl}}/api/accounts/{id}`."
           },
           "response": []
         },
@@ -87,6 +97,16 @@
             "header": [],
             "url": "{{baseUrl}}/api/accounts",
             "description": "Returns all accounts (200)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get account by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}",
+            "description": "Returns a single account by id (200)."
           },
           "response": []
         },

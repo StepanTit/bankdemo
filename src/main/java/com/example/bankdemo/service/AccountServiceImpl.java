@@ -46,6 +46,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Account findById(long accountId) {
+        return accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+    }
+
+    @Override
     @Transactional
     public Account deposit(long accountId, BigDecimal amount) {
         if (accountRepository.addToBalance(accountId, amount) == 0) {
