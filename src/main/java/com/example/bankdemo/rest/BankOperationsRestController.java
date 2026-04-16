@@ -75,10 +75,11 @@ public class BankOperationsRestController {
         return AccountResponse.from(account);
     }
 
-    @PostMapping("/accounts/transfer")
-    public TransferResponse transfer(@Valid @RequestBody TransferRequest request) {
+    @PostMapping("/accounts/{accountId}/transfer")
+    public TransferResponse transfer(@PathVariable long accountId,
+                                     @Valid @RequestBody TransferRequest request) {
         return TransferResponse.from(accountService.transfer(
-                request.sourceAccountId(),
+                accountId,
                 request.targetAccountId(),
                 request.amount()));
     }

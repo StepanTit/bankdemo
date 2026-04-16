@@ -9,7 +9,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
@@ -28,6 +30,7 @@ public class User {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Getter
     @Column(nullable = false, unique = true)
     private String login;
 
@@ -43,10 +46,6 @@ public class User {
             throw new IllegalStateException("User is not persisted yet");
         }
         return id;
-    }
-
-    public String getLogin() {
-        return login;
     }
 
     public List<Account> getAccountList() {

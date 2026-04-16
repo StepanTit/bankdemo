@@ -19,10 +19,6 @@
       "value": "1"
     },
     {
-      "key": "sourceAccountId",
-      "value": "1"
-    },
-    {
       "key": "targetAccountId",
       "value": "2"
     }
@@ -144,9 +140,9 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"sourceAccountId\": {{sourceAccountId}},\n  \"targetAccountId\": {{targetAccountId}},\n  \"amount\": 50.00\n}"
+              "raw": "{\n  \"targetAccountId\": {{targetAccountId}},\n  \"amount\": 50.00\n}"
             },
-            "url": "{{baseUrl}}/api/accounts/transfer",
+            "url": "{{baseUrl}}/api/accounts/{{accountId}}/transfer",
             "description": "Transfers between accounts. Returns `TransferResponse` with updated `sourceAccount` and `targetAccount` (200)."
           },
           "response": []

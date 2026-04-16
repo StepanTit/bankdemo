@@ -9,7 +9,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -17,7 +19,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "accounts")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Account {
 
@@ -30,6 +32,7 @@ public class Account {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Getter
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal moneyAmount;
 
@@ -51,10 +54,6 @@ public class Account {
 
     public long getUserId() {
         return user.getId();
-    }
-
-    public BigDecimal getMoneyAmount() {
-        return moneyAmount;
     }
 
     public void setMoneyAmount(BigDecimal moneyAmount) {
