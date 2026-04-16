@@ -6,16 +6,17 @@ import com.example.bankdemo.entity.User;
 import com.example.bankdemo.exception.AccountNotFoundException;
 import com.example.bankdemo.exception.CannotCloseLastAccountException;
 import com.example.bankdemo.exception.InsufficientFundsException;
-import com.example.bankdemo.exception.InvalidAmountException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
+@Validated
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
@@ -47,7 +48,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account deposit(long accountId, BigDecimal amount) {
-        validatePositiveAmount(amount);
         if (accountRepository.addToBalance(accountId, amount) == 0) {
             throw new AccountNotFoundException(accountId);
         }
@@ -58,7 +58,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public Account withdraw(long accountId, BigDecimal amount) {
-        validatePositiveAmount(amount);
         if (accountRepository.subtractFromBalanceIfSufficient(accountId, amount) == 0) {
             BigDecimal current = accountRepository.findById(accountId)
                     .map(Account::getMoneyAmount)
@@ -72,7 +71,6 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public TransferResult transfer(long sourceAccountId, long targetAccountId, BigDecimal amount) {
-        validatePositiveAmount(amount);
         if (sourceAccountId == targetAccountId) {
             throw new IllegalArgumentException("Source and target account IDs must be different");
         }
@@ -148,7 +146,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void withdrawFromLockedAccount(Account account, BigDecimal amount) {
-        validatePositiveAmount(amount);
         long accountId = account.getId();
         BigDecimal current = account.getMoneyAmount();
         if (current.compareTo(amount) < 0) {
@@ -158,13 +155,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void depositToLockedAccount(Account account, BigDecimal amount) {
-        validatePositiveAmount(amount);
         account.setMoneyAmount(account.getMoneyAmount().add(amount));
-    }
-
-    private void validatePositiveAmount(BigDecimal amount) {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidAmountException(amount);
-        }
     }
 }

@@ -8,6 +8,7 @@ import com.example.bankdemo.exception.UserAlreadyExistsException;
 import com.example.bankdemo.exception.UserNotFoundException;
 import com.example.bankdemo.rest.dto.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -51,6 +52,16 @@ public class GlobalExceptionHandler {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .findFirst()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .orElse("Validation failed");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(message, operationFrom(req)));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiErrorResponse> constraintViolation(ConstraintViolationException e, HttpServletRequest req) {
+        String message = e.getConstraintViolations().stream()
+                .findFirst()
+                .map(cv -> cv.getPropertyPath() + ": " + cv.getMessage())
                 .orElse("Validation failed");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiErrorResponse(message, operationFrom(req)));
