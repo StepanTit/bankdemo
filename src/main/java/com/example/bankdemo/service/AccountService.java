@@ -20,5 +20,13 @@ public interface AccountService {
                               long targetAccountId,
                               @NotNull @Positive BigDecimal amount);
 
+    Account depositOptimistic(long accountId, @NotNull @Positive BigDecimal amount);
+
+    Account withdrawOptimistic(long accountId, @NotNull @Positive BigDecimal amount);
+
+    TransferResult transferOptimistic(long sourceAccountId,
+                                      long targetAccountId,
+                                      @NotNull @Positive BigDecimal amount);
+
     void closeAccount(long accountId);
 }

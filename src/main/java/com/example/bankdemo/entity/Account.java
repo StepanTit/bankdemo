@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,6 +36,10 @@ public class Account {
     @Getter
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal moneyAmount;
+
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long lockVersion = 0L;
 
     public Account(User user, BigDecimal moneyAmount) {
         this.user = Objects.requireNonNull(user, "user must not be null");

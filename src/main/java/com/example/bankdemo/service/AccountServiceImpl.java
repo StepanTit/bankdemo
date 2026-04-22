@@ -163,4 +163,73 @@ public class AccountServiceImpl implements AccountService {
     private void depositToLockedAccount(Account account, BigDecimal amount) {
         account.setMoneyAmount(account.getMoneyAmount().add(amount));
     }
+
+    @Override
+    @Transactional
+    public Account depositOptimistic(long accountId, BigDecimal amount) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+        account.setMoneyAmount(account.getMoneyAmount().add(amount));
+        accountRepository.save(account);
+        accountRepository.flush();
+        return account;
+    }
+
+    @Override
+    @Transactional
+    public Account withdrawOptimistic(long accountId, BigDecimal amount) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException(accountId));
+        long id = account.getId();
+        BigDecimal current = account.getMoneyAmount();
+        if (current.compareTo(amount) < 0) {
+            throw new InsufficientFundsException(id, current, amount);
+        }
+        account.setMoneyAmount(current.subtract(amount));
+        accountRepository.save(account);
+        accountRepository.flush();
+        return account;
+    }
+
+    @Override
+    @Transactional
+    public TransferResult transferOptimistic(long sourceAccountId, long targetAccountId, BigDecimal amount) {
+        if (sourceAccountId == targetAccountId) {
+            throw new IllegalArgumentException("Source and target account IDs must be different");
+        }
+
+        Account source = accountRepository.findById(sourceAccountId)
+                .orElseThrow(() -> new AccountNotFoundException(sourceAccountId));
+        Account target = accountRepository.findById(targetAccountId)
+                .orElseThrow(() -> new AccountNotFoundException(targetAccountId));
+
+        boolean sameUser = source.getUserId() == target.getUserId();
+        if (sameUser) {
+            long srcId = source.getId();
+            BigDecimal current = source.getMoneyAmount();
+            if (current.compareTo(amount) < 0) {
+                throw new InsufficientFundsException(srcId, current, amount);
+            }
+            source.setMoneyAmount(current.subtract(amount));
+            target.setMoneyAmount(target.getMoneyAmount().add(amount));
+            return new TransferResult(source, target);
+        }
+
+        BigDecimal commission = amount
+                .multiply(transferCommissionPercent)
+                .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+        BigDecimal totalToWithdraw = amount.add(commission);
+
+        BigDecimal current = source.getMoneyAmount();
+        if (current.compareTo(totalToWithdraw) < 0) {
+            throw new InsufficientFundsException(sourceAccountId, current, totalToWithdraw);
+        }
+
+        source.setMoneyAmount(current.subtract(totalToWithdraw));
+        target.setMoneyAmount(target.getMoneyAmount().add(amount));
+        accountRepository.save(source);
+        accountRepository.save(target);
+        accountRepository.flush();
+        return new TransferResult(source, target);
+    }
 }

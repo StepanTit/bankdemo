@@ -111,7 +111,7 @@
           "response": []
         },
         {
-          "name": "Deposit",
+          "name": "Deposit v1 (native update)",
           "request": {
             "method": "POST",
             "header": [
@@ -124,13 +124,32 @@
               "mode": "raw",
               "raw": "{\n  \"amount\": 100.50\n}"
             },
-            "url": "{{baseUrl}}/api/accounts/{{accountId}}/deposit",
-            "description": "Deposits funds. Returns `AccountResponse` with updated balance (200)."
+            "url": "{{baseUrl}}/api/v1/accounts/{{accountId}}/deposit",
+            "description": "Deposit via JPQL update (no entity optimistic lock). Returns `AccountResponse` (200)."
           },
           "response": []
         },
         {
-          "name": "Withdraw",
+          "name": "Deposit v2 (optimistic)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 100.50\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/accounts/{{accountId}}/deposit",
+            "description": "Deposit via load + save (`@Version`). May return 409 on conflict."
+          },
+          "response": []
+        },
+        {
+          "name": "Withdraw v1 (native update)",
           "request": {
             "method": "POST",
             "header": [
@@ -143,13 +162,32 @@
               "mode": "raw",
               "raw": "{\n  \"amount\": 25.00\n}"
             },
-            "url": "{{baseUrl}}/api/accounts/{{accountId}}/withdraw",
-            "description": "Withdraws funds. Returns `AccountResponse` with updated balance (200)."
+            "url": "{{baseUrl}}/api/v1/accounts/{{accountId}}/withdraw",
+            "description": "Withdraw via JPQL update. Returns `AccountResponse` (200)."
           },
           "response": []
         },
         {
-          "name": "Transfer",
+          "name": "Withdraw v2 (optimistic)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 25.00\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/accounts/{{accountId}}/withdraw",
+            "description": "Withdraw via load + save (`@Version`). May return 409 on conflict."
+          },
+          "response": []
+        },
+        {
+          "name": "Transfer v1 (pessimistic)",
           "request": {
             "method": "POST",
             "header": [
@@ -162,8 +200,27 @@
               "mode": "raw",
               "raw": "{\n  \"targetAccountId\": {{targetAccountId}},\n  \"amount\": 50.00\n}"
             },
-            "url": "{{baseUrl}}/api/accounts/{{accountId}}/transfer",
-            "description": "Transfers between accounts. Returns `TransferResponse` with updated `sourceAccount` and `targetAccount` (200)."
+            "url": "{{baseUrl}}/api/v1/accounts/{{accountId}}/transfer",
+            "description": "Transfer with pessimistic row locks. Returns `TransferResponse` (200)."
+          },
+          "response": []
+        },
+        {
+          "name": "Transfer v2 (optimistic)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetAccountId\": {{targetAccountId}},\n  \"amount\": 50.00\n}"
+            },
+            "url": "{{baseUrl}}/api/v2/accounts/{{accountId}}/transfer",
+            "description": "Transfer with optimistic locking (`@Version`). May return 409 on conflict."
           },
           "response": []
         },

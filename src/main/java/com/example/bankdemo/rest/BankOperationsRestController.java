@@ -86,26 +86,49 @@ public class BankOperationsRestController {
         accountService.closeAccount(accountId);
     }
 
-    @PostMapping("/accounts/{accountId}/deposit")
-    public AccountResponse deposit(@PathVariable long accountId,
-                                   @Valid @RequestBody AccountAmountOperationRequest request) {
+    @PostMapping("/v1/accounts/{accountId}/deposit")
+    public AccountResponse depositV1(@PathVariable long accountId,
+                                     @Valid @RequestBody AccountAmountOperationRequest request) {
         Account account = accountService.deposit(accountId, request.amount());
         return AccountResponse.from(account);
     }
 
-    @PostMapping("/accounts/{accountId}/transfer")
-    public TransferResponse transfer(@PathVariable long accountId,
-                                     @Valid @RequestBody TransferRequest request) {
+    @PostMapping("/v2/accounts/{accountId}/deposit")
+    public AccountResponse depositV2(@PathVariable long accountId,
+                                     @Valid @RequestBody AccountAmountOperationRequest request) {
+        Account account = accountService.depositOptimistic(accountId, request.amount());
+        return AccountResponse.from(account);
+    }
+
+    @PostMapping("/v1/accounts/{accountId}/transfer")
+    public TransferResponse transferV1(@PathVariable long accountId,
+                                       @Valid @RequestBody TransferRequest request) {
         return TransferResponse.from(accountService.transfer(
                 accountId,
                 request.targetAccountId(),
                 request.amount()));
     }
 
-    @PostMapping("/accounts/{accountId}/withdraw")
-    public AccountResponse withdraw(@PathVariable long accountId,
-                                    @Valid @RequestBody AccountAmountOperationRequest request) {
+    @PostMapping("/v2/accounts/{accountId}/transfer")
+    public TransferResponse transferV2(@PathVariable long accountId,
+                                       @Valid @RequestBody TransferRequest request) {
+        return TransferResponse.from(accountService.transferOptimistic(
+                accountId,
+                request.targetAccountId(),
+                request.amount()));
+    }
+
+    @PostMapping("/v1/accounts/{accountId}/withdraw")
+    public AccountResponse withdrawV1(@PathVariable long accountId,
+                                      @Valid @RequestBody AccountAmountOperationRequest request) {
         Account account = accountService.withdraw(accountId, request.amount());
+        return AccountResponse.from(account);
+    }
+
+    @PostMapping("/v2/accounts/{accountId}/withdraw")
+    public AccountResponse withdrawV2(@PathVariable long accountId,
+                                      @Valid @RequestBody AccountAmountOperationRequest request) {
+        Account account = accountService.withdrawOptimistic(accountId, request.amount());
         return AccountResponse.from(account);
     }
 }
