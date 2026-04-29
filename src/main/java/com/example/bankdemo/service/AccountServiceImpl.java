@@ -170,8 +170,6 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
         account.setMoneyAmount(account.getMoneyAmount().add(amount));
-        accountRepository.save(account);
-        accountRepository.flush();
         return account;
     }
 
@@ -186,8 +184,6 @@ public class AccountServiceImpl implements AccountService {
             throw new InsufficientFundsException(id, current, amount);
         }
         account.setMoneyAmount(current.subtract(amount));
-        accountRepository.save(account);
-        accountRepository.flush();
         return account;
     }
 
@@ -227,9 +223,6 @@ public class AccountServiceImpl implements AccountService {
 
         source.setMoneyAmount(current.subtract(totalToWithdraw));
         target.setMoneyAmount(target.getMoneyAmount().add(amount));
-        accountRepository.save(source);
-        accountRepository.save(target);
-        accountRepository.flush();
         return new TransferResult(source, target);
     }
 }
